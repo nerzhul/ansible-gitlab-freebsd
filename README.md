@@ -39,6 +39,18 @@ gitlab:
     password: gitlabpwd
     host: 127.0.0.1
     port: 5432
+  lfs_enable: false
+  ldap:
+    enable: false
+    host: 127.0.0.1
+    port: 389
+    attr_uid: "uid"
+    base: "ou=people,dc=example,dc=org"
+    method: "plain"
+    bind_dn: "cn=ro-user,dc=example,dc=org"
+    bind_password: "ro-user_password"
+    is_activedirectory: false
+    block_auto_created_users: false
 ```
 
 Dependencies

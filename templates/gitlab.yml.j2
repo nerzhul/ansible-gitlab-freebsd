@@ -29,9 +29,9 @@ production: &base
     # Uncomment and set to false if you need to disable email sending from GitLab (default: true)
     email_enabled:
     # Email address used in the "From" field in mails sent by GitLab
-    email_from: gitlab@gitlab.unix-experience.fr
+    email_from: {{ gitlab.mail }}
     email_display_name:
-    email_reply_to:
+    email_reply_to: {{ gitlab.mail_reply_to }}
 
     # Email server smtp settings are in [a separate file](initializers/smtp_settings.rb.sample).
 
@@ -108,7 +108,7 @@ production: &base
 
   ## Git LFS
   lfs:
-    enabled: false
+    enabled: {{ gitlab.lfs_enable | to_yaml }}
     # The location where LFS objects are stored (default: shared/lfs-objects).
     storage_path: {{ gitlab.home }}/gitlab/shared/lfs-objects
 
@@ -184,9 +184,23 @@ production: &base
   # You can inspect a sample of the LDAP users with login access by running:
   #   bundle exec rake gitlab:ldap:check RAILS_ENV=production
   ldap:
-    enabled: false
+    enabled: {{ gitlab.ldap.enable | to_yaml }}
+{% if gitlab.ldap.enable %}
     servers:
       main:
+        label: "LDAP",
+        host: {{ gitlab.ldap.host }}
+        port: {{ gitlab.ldap.port }}
+        uid: {{ gitlab.ldap.attr_uid }}
+        base: {{ gitlab.ldap.base }}
+        method: {{ gitlab.ldap.method }}
+        bind_dn: {{ gitlab.ldap.bind_dn }}
+        password: {{ gitlab.ldap.bind_password }}
+        active_directory": {{ gitlab.ldap.is_activedirectory | to_yaml }}
+        block_auto_created_users: {{ gitlab.ldap.block_auto_created_users }}
+{% else %}
+    servers: []
+{% endif %}
 
   ## Kerberos settings
   kerberos:
@@ -322,49 +336,4 @@ production: &base
     rack_attack:
       git_basic_auth:
 
-
-development:
-  <<: *base
-
-test:
-  <<: *base
-  gravatar:
-    enabled: true
-  gitlab:
-    host: localhost
-    port: 80
-
-    # When you run tests we clone and setup gitlab-shell
-    # In order to setup it correctly you need to specify
-    # your system username you use to run GitLab
-    # user: YOUR_USERNAME
-  satellites:
-    path: tmp/tests/gitlab-satellites/
-  gitlab_shell:
-    path: tmp/tests/gitlab-shell/
-    repos_path: tmp/tests/repositories/
-    hooks_path: tmp/tests/gitlab-shell/hooks/
-  issues_tracker:
-    redmine:
-      title: "Redmine"
-      project_url: "http://redmine/projects/:issues_tracker_id"
-      issues_url: "http://redmine/:project_id/:issues_tracker_id/:id"
-      new_issue_url: "http://redmine/projects/:issues_tracker_id/issues/new"
-  ldap:
-    enabled: false
-    servers:
-      main:
-        label: ldap
-        host: 127.0.0.1
-        port: 3890
-        uid: 'uid'
-        method: 'plain' # "tls" or "ssl" or "plain"
-        base: 'dc=example,dc=com'
-        user_filter: ''
-        group_base: 'ou=groups,dc=example,dc=com'
-        admin_group: ''
-        sync_ssh_keys: false
-
-staging:
-  <<: *base
 
