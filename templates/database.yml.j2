@@ -1,0 +1,13 @@
+production:
+  adapter: postgresql
+  encoding: unicode
+  collation: 
+  database: {{ gitlab.db.name }}
+  pool: 10
+  username: '{{ gitlab.db.user }}'
+  password: '{{ gitlab.db.password }}'
+  host: '{{ gitlab.db.host }}'
+  port: {{ gitlab.db.port }}
+  socket: 
+  sslmode: 
+  sslrootcert:

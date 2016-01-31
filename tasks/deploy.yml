@@ -1,0 +1,19 @@
+---
+- bundler: state=present deployment_mode=yes exclude_groups="development test mysql aws" chdir="{{ gitlab.home }}/gitlab"
+- shell: "bundle exec rake \"gitlab:shell:install[v2.10.1]\" REDIS_URL=redis://{{ gitlab.redis.host }}:{{ gitlab.redis.port }} RAILS_ENV=production"
+  args:
+    chdir: "{{ gitlab.home }}/gitlab"
+- shell: "{{ item }}"
+  with_items:
+    - bundle exec rake gitlab:env:info RAILS_ENV=production
+    - bundle exec rake assets:precompile RAILS_ENV=production
+  args:
+    chdir: "{{ gitlab.home }}/gitlab"
+
+- git: repo=https://gitlab.com/gitlab-org/gitlab-workhorse.git dest="{{ gitlab.home }}/gitlab-workhorse" version=0.6.2 clone=yes
+  register: gwmod
+
+- shell: make
+  args:
+    chdir: "{{ gitlab.home }}/gitlab-workhorse"
+  when: gwmod.changed

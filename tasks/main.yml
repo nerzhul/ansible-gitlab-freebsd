@@ -1,0 +1,46 @@
+---
+- pkgng: name="{{ item }}" state=present
+  with_items:
+    - bash
+    - icu
+    - cmake
+    - pkgconf
+    - git
+    - nginx
+    - node
+    - ruby
+    - ruby21-gems
+    - logrotate
+    - krb5
+    - go
+
+- gem: name="bundler" state=present user_install=no
+- user: name={{ gitlab.user }} comment="Gitlab" uid={{ gitlab.uid }} createhome=yes shell="/usr/local/bin/bash"
+- git: repo=https://gitlab.com/gitlab-org/gitlab-ce.git dest="{{ gitlab.home }}/gitlab" version={{ gitlab.version }} clone=yes update=no
+  register: gitmod
+  ignore_errors: yes
+
+- template: src=gitlab.yml.j2 dest="{{ gitlab.home }}/gitlab/config/gitlab.yml"
+- template: src=resque.yml.j2 dest="{{ gitlab.home }}/gitlab/config/resque.yml"
+- template: src=database.yml.j2 dest="{{ gitlab.home }}/gitlab/config/database.yml"
+
+- include: deploy.yml
+  when: gitmod.changed
+
+- file: path="{{ gitlab.home }}/gitlab/public/uploads" state=directory owner={{ gitlab.user }} mode=0755 recurse=yes
+- file: path="{{ gitlab.home }}/gitlab/gitlab-satellites" state=directory owner={{ gitlab.user }} mode=0750 recurse=yes
+
+- file: path="{{ item }}" owner={{ gitlab.user }} recurse=yes mode=0755
+  with_items:
+    - "{{ gitlab.home }}/gitlab/log"
+    - "{{ gitlab.home }}/gitlab/tmp"
+
+- template: src=unicorn.rb.j2 dest="{{ gitlab.home }}/gitlab/config/unicorn.rb"
+- template: src=rack_attack.rb.j2 dest="{{ gitlab.home }}/gitlab/config/initializers/rack_attack.rb"
+- template: src=gitconfig.j2 dest="{{ gitlab.home }}/.gitconfig"
+- template: src=rc_d.j2 dest="/usr/local/etc/rc.d/gitlab" mode=0755
+- template: src=secrets.yml.j2 dest="{{ gitlab.home }}/gitlab/config/secrets.yml" mode=0700 owner={{ gitlab.user }}
+
+- file: path=/usr/local/etc/nginx state=directory mode=0755
+- template: src=nginx_config.j2 dest=/usr/local/etc/nginx/gitlab.conf mode=0755
+- service: name=gitlab enabled=yes

@@ -1,0 +1,27 @@
+galaxy_info:
+  author: Loic Blot
+  description: Quick & easy install gitlab natively on your FreeBSD server
+  company: Unix Experience / Infopro Digital
+
+  license: BSD
+
+  min_ansible_version: 2.0
+
+  github_branch: stable
+
+  platforms:
+  - name: FreeBSD
+    versions:
+    - 9.1
+    - 9.2
+    - 9.3
+    - 10.0
+    - 10.1
+    - 10.2
+
+  galaxy_tags:
+    - gitlab
+    - freebsd
+    - installer
+
+dependencies: []

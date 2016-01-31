@@ -1,0 +1,20 @@
+---
+gitlab:
+  user: git
+  uid: 7500
+  version: 8-4-stable
+  host: gitlab.local
+  home: /home/git
+  http_ssl: true
+  http_ipv6: true
+  mail: gitlab@gitlab.local
+  secret_key: myfabuloussecretkey
+  redis:
+    host: 127.0.0.1
+    port: 6379
+  db:
+    name: gitlabdb
+    user: gitlab
+    password: gitlabpwd
+    host: 127.0.0.1
+    port: 5432
