@@ -29,6 +29,8 @@
 
 - file: path="{{ gitlab.home }}/gitlab/public/uploads" state=directory owner={{ gitlab.user }} mode=0755 recurse=yes
 - file: path="{{ gitlab.home }}/gitlab/gitlab-satellites" state=directory owner={{ gitlab.user }} mode=0750 recurse=yes
+- file: path="{{ gitlab.home }}/gitlab/shared/lfs-objects" state=directory owner={{ gitlab.user }} mode=0750
+  when: gitlab.lfs_enable
 
 - file: path="{{ item }}" owner={{ gitlab.user }} recurse=yes mode=0755
   with_items:
