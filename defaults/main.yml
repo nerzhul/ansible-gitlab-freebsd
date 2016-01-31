@@ -31,3 +31,12 @@ gitlab:
     bind_password: "ro-user_password"
     is_activedirectory: false
     block_auto_created_users: false
+  omniauth:
+    enable: false
+    block_auto_created_users: true
+    github:
+      app_id: false
+      app_secret: false
+    twitter:
+      app_id: false
+      app_secret: false
