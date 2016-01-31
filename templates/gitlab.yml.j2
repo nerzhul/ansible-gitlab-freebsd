@@ -108,7 +108,7 @@ production: &base
 
   ## Git LFS
   lfs:
-    enabled: {{ gitlab.lfs_enable | to_yaml }}
+    enabled: {{ gitlab.lfs_enable }}
     # The location where LFS objects are stored (default: shared/lfs-objects).
     storage_path: {{ gitlab.home }}/gitlab/shared/lfs-objects
 
@@ -184,19 +184,19 @@ production: &base
   # You can inspect a sample of the LDAP users with login access by running:
   #   bundle exec rake gitlab:ldap:check RAILS_ENV=production
   ldap:
-    enabled: {{ gitlab.ldap.enable | to_yaml }}
+    enabled: {{ gitlab.ldap.enable }}
 {% if gitlab.ldap.enable %}
     servers:
       main:
-        label: "LDAP",
+        label: "LDAP"
         host: {{ gitlab.ldap.host }}
         port: {{ gitlab.ldap.port }}
         uid: {{ gitlab.ldap.attr_uid }}
-        base: {{ gitlab.ldap.base }}
-        method: {{ gitlab.ldap.method }}
-        bind_dn: {{ gitlab.ldap.bind_dn }}
-        password: {{ gitlab.ldap.bind_password }}
-        active_directory": {{ gitlab.ldap.is_activedirectory | to_yaml }}
+        base: "{{ gitlab.ldap.base }}"
+        method: "{{ gitlab.ldap.method }}"
+        bind_dn: "{{ gitlab.ldap.bind_dn }}"
+        password: "{{ gitlab.ldap.bind_password }}"
+        active_directory": {{ gitlab.ldap.is_activedirectory }}
         block_auto_created_users: {{ gitlab.ldap.block_auto_created_users }}
 {% else %}
     servers: []
