@@ -16,14 +16,14 @@
     - redis
 
 - gem: name="bundler" state=present user_install=no
-- user: name={{ gitlab.user }} comment="Gitlab" uid={{ gitlab.uid }} group={{ gitlab.group }}createhome=yes shell="/usr/local/bin/bash"
+- user: name={{ gitlab.user }} comment="Gitlab" uid={{ gitlab.uid }} group={{ gitlab.group }} createhome=yes shell="/usr/local/bin/bash"
 - group: name={{ gitlab.group }} gid={{ gitlab.gid }}
 - git: repo=https://gitlab.com/gitlab-org/gitlab-ce.git dest="{{ gitlab.home }}/gitlab" version={{ gitlab.version }} clone=yes update=no
   register: gitmod
   ignore_errors: yes
 
 - file: path={{ gitlab.path.logs }} state=directory owner={{ gitlab.user }} group={{ gitlab.group }} mode=0750 recurse=yes
-- file: src={{ gitlab.path.logs }} dest="{{ gitlab.home }}/gitlab/log" state=link
+- file: src={{ gitlab.path.logs }} dest="{{ gitlab.home }}/gitlab/log" state=link force=yes
 
 - template: src=gitlab.yml.j2 dest="{{ gitlab.home }}/gitlab/config/gitlab.yml"
 - template: src=resque.yml.j2 dest="{{ gitlab.home }}/gitlab/config/resque.yml"
@@ -41,12 +41,11 @@
 - file: path="{{ gitlab.home }}/.ssh" state=directory mode=0700 owner={{ gitlab.user }} group={{ gitlab.group }}
 - file: path="{{ gitlab.home }}/.ssh/authorized_keys" state=file mode=0700 owner={{ gitlab.user }} group={{ gitlab.group }}
 
-- file: path="{{ gitlab.path.datadir }}" state=directory owner={{ gitlab.user }} group={{ gitlab.grou }} mode=0755
+- file: path="{{ gitlab.path.datadir }}" state=directory owner={{ gitlab.user }} group={{ gitlab.group }} mode=0755
 - file: path="{{ gitlab.path.repositories }}" state=directory owner={{ gitlab.user }} group={{ gitlab.group }} mode="u+rwx,g+rws,o-rws"
 
 - file: path="{{ item }}" owner={{ gitlab.user }} group={{ gitlab.group }} recurse=yes mode=0755
   with_items:
-    - "{{ gitlab.home }}/gitlab/log"
     - "{{ gitlab.home }}/gitlab/tmp"
 
 - template: src=unicorn.rb.j2 dest="{{ gitlab.home }}/gitlab/config/unicorn.rb"

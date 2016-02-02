@@ -24,8 +24,8 @@ gitlab:
   lfs_enable: false
   path:
     datadir: "/var/db/gitlab"
-    repositories: "{{ gitlab.path.datadir }}/git-repositories"
-    lfs_objects: "{{ gitlab.path.datadir }}/lfs-objects"
+    repositories: "/var/db/gitlab/git-repositories"
+    lfs_objects: "/var/db/gitlab/lfs-objects"
     logs: "/var/log/gitlab"
   unicorn:
     mem_min: 300
