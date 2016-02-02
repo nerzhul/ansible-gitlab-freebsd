@@ -23,12 +23,15 @@ Available variables are listed below, along with default values:
 gitlab:
   user: git
   uid: 7500
+  group: git
+  gid: 7500
   version: 8-4-stable
   host: gitlab.local
   home: /home/git
   http_ssl: true
   http_ipv6: true
   mail: gitlab@gitlab.local
+  mail_reply_to: no-reply@gitlab.local
   secret_key: myfabuloussecretkey
   redis:
     host: 127.0.0.1
@@ -40,6 +43,14 @@ gitlab:
     host: 127.0.0.1
     port: 5432
   lfs_enable: false
+  path:
+    datadir: "/var/db/gitlab"
+    repositories: "{{ gitlab.path.datadir }}/git-repositories"
+    lfs_objects: "{{ gitlab.path.datadir }}/lfs-objects"
+    logs: "/var/log/gitlab"
+  unicorn:
+    mem_min: 300
+    mem_max: 350
   ldap:
     enable: false
     host: 127.0.0.1
