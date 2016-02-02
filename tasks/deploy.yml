@@ -3,11 +3,14 @@
 - shell: "bundle exec rake \"gitlab:shell:install[v2.10.1]\" REDIS_URL=redis://{{ gitlab.redis.host }}:{{ gitlab.redis.port }} RAILS_ENV=production"
   args:
     chdir: "{{ gitlab.home }}/gitlab"
+
+- file: name="{{ gitlab.home }}/embedded/service/gitlab-shell/gitlab-shell.log" state=file owner={{ gitlab.user }} group={{ gitlab.group }}
 - shell: "{{ item }}"
   with_items:
     - bundle exec rake gitlab:env:info RAILS_ENV=production
     - bundle exec rake assets:precompile RAILS_ENV=production
     - bundle exec rake db:migrate RAILS_ENV=production
+    - "{{ gitlab.home }}/embedded/service/gitlab-shell/bin/create-hooks"
   args:
     chdir: "{{ gitlab.home }}/gitlab"
 

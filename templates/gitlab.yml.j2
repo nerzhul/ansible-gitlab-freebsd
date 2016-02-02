@@ -303,7 +303,7 @@ production: &base
     path: {{ gitlab.home }}/embedded/service/gitlab-shell/
 
     # REPOS_PATH MUST NOT BE A SYMLINK!!!
-    repos_path: {{ gitlab.home }}/git-data/repositories
+    repos_path: {{ gitlab.path.repositories }}
     hooks_path: {{ gitlab.home }}/embedded/service/gitlab-shell/hooks/
 
     # Git over HTTP

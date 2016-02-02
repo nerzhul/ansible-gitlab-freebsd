@@ -1,0 +1,15 @@
+---
+user: {{ gitlab.user }}
+gitlab_url: "http://{{ gitlab.host }}"
+http_settings:
+  self_signed_cert: false
+# Symlink is forbidden
+repos_path: "{{ gitlab.path.repositories }}"
+auth_file: "{{ gitlab.home }}/.ssh/authorized_keys"
+redis:
+  bin: 'redis-cli'
+  namespace: resque:gitlab
+  host: {{ gitlab.redis.host }}
+  port: {{ gitlab.redis.port }}
+log_level: INFO
+audit_usernames: false

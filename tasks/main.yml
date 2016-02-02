@@ -13,26 +13,38 @@
     - logrotate
     - krb5
     - go
+    - redis
 
 - gem: name="bundler" state=present user_install=no
-- user: name={{ gitlab.user }} comment="Gitlab" uid={{ gitlab.uid }} createhome=yes shell="/usr/local/bin/bash"
+- user: name={{ gitlab.user }} comment="Gitlab" uid={{ gitlab.uid }} group={{ gitlab.group }}createhome=yes shell="/usr/local/bin/bash"
+- group: name={{ gitlab.group }} gid={{ gitlab.gid }}
 - git: repo=https://gitlab.com/gitlab-org/gitlab-ce.git dest="{{ gitlab.home }}/gitlab" version={{ gitlab.version }} clone=yes update=no
   register: gitmod
   ignore_errors: yes
 
+- file: path={{ gitlab.path.logs }} state=directory owner={{ gitlab.user }} group={{ gitlab.group }} mode=0750 recurse=yes
+- file: src={{ gitlab.path.logs }} dest="{{ gitlab.home }}/gitlab/log" state=link
+
 - template: src=gitlab.yml.j2 dest="{{ gitlab.home }}/gitlab/config/gitlab.yml"
 - template: src=resque.yml.j2 dest="{{ gitlab.home }}/gitlab/config/resque.yml"
 - template: src=database.yml.j2 dest="{{ gitlab.home }}/gitlab/config/database.yml"
+- template: src="gitlab-shell/config.yml" dest="{{ gitlab.home }}/embedded/service/gitlab-shell/config.yml"
 
 - include: deploy.yml
   when: gitmod.changed
 
-- file: path="{{ gitlab.home }}/gitlab/public/uploads" state=directory owner={{ gitlab.user }} mode=0755 recurse=yes
-- file: path="{{ gitlab.home }}/gitlab/gitlab-satellites" state=directory owner={{ gitlab.user }} mode=0750 recurse=yes
-- file: path="{{ gitlab.home }}/gitlab/shared/lfs-objects" state=directory owner={{ gitlab.user }} mode=0750
+- file: path="{{ gitlab.home }}/gitlab/public/uploads" state=directory owner={{ gitlab.user }} group={{ gitlab.group }} mode=0755 recurse=yes
+- file: path="{{ gitlab.home }}/gitlab/gitlab-satellites" state=directory owner={{ gitlab.user }} group={{ gitlab.group }} mode=0750 recurse=yes
+- file: path="{{ gitlab.home }}/{{ gitlab.path.lfs_objects }}" state=directory owner={{ gitlab.user }} group={{ gitlab.group }} mode=0750
   when: gitlab.lfs_enable
 
-- file: path="{{ item }}" owner={{ gitlab.user }} recurse=yes mode=0755
+- file: path="{{ gitlab.home }}/.ssh" state=directory mode=0700 owner={{ gitlab.user }} group={{ gitlab.group }}
+- file: path="{{ gitlab.home }}/.ssh/authorized_keys" state=file mode=0700 owner={{ gitlab.user }} group={{ gitlab.group }}
+
+- file: path="{{ gitlab.path.datadir }}" state=directory owner={{ gitlab.user }} group={{ gitlab.grou }} mode=0755
+- file: path="{{ gitlab.path.repositories }}" state=directory owner={{ gitlab.user }} group={{ gitlab.group }} mode="u+rwx,g+rws,o-rws"
+
+- file: path="{{ item }}" owner={{ gitlab.user }} group={{ gitlab.group }} recurse=yes mode=0755
   with_items:
     - "{{ gitlab.home }}/gitlab/log"
     - "{{ gitlab.home }}/gitlab/tmp"

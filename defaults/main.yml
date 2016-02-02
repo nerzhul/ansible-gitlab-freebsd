@@ -2,6 +2,8 @@
 gitlab:
   user: git
   uid: 7500
+  group: git
+  gid: 7500
   version: 8-4-stable
   host: gitlab.local
   home: /home/git
@@ -20,6 +22,14 @@ gitlab:
     host: 127.0.0.1
     port: 5432
   lfs_enable: false
+  path:
+    datadir: "/var/db/gitlab"
+    repositories: "{{ gitlab.path.datadir }}/git-repositories"
+    lfs_objects: "{{ gitlab.path.datadir }}/lfs-objects"
+    logs: "/var/log/gitlab"
+  unicorn:
+    mem_min: 300
+    mem_max: 350
   ldap:
     enable: false
     host: 127.0.0.1
